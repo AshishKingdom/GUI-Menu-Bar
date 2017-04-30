@@ -55,18 +55,20 @@ SUB initMenuItems (i)
     NEXT
     IF tmp2$ = "" THEN tmp2$ = tmp$
     GUIMenuItems(i).name = tmp2$
-    IF i = 1 THEN GUIMenuItems(i).x = 10 ELSE GUIMenuItems(i).x = LEN(RTRIM$(GUIMenuItems(i - 1).name)) * _FONTWIDTH + 30
+    IF i = 1 THEN GUIMenuItems(i).x = 10 ELSE GUIMenuItems(i).x = (GUIMenuItems(i - 1).x - 10) + LEN(RTRIM$(GUIMenuItems(i - 1).name)) * _FONTWIDTH + 30
 
 END SUB
 
 SUB GUIMenubarShow ()
     '  IF NOT allowMenuBar THEN EXIT SUB
-    LINE (0, 0)-(_WIDTH, _FONTHEIGHT), GUIMenubarTheme.defaultBG, BF
+
+     LINE (0, 0)-(_WIDTH, _FONTHEIGHT), GUIMenubarTheme.defaultBG, BF
 
     FOR i = 1 TO UBOUND(guimenuitems) - 1
-        IF GUIMouseY > 0 AND GUIMouseY < _FONTHEIGHT AND GUIMouseX > GUIMenuItems(i).x - 10 AND GUIMouseX < GUIMenuItems(i).x + LEN(RTRIM$(GUIMenuItems(i).name)) * _FONTWIDTH + 10 THEN
-            IF GUIMouseClick THEN
+        IF GUIMouseY > 0 AND GUIMouseY < _FONTHEIGHT AND GUIMouseX > GUIMenuItems(i).x - 10 AND GUIMouseX < GUIMenuItems(i).x + LEN(RTRIM$(GUIMenuItems(i).name)) * _FONTWIDTH + 10 OR UCASE$(GUIKeyHit$) = UCASE$(GUIMenuItems(i).shortKey) THEN
+            IF GUIMouseClick OR UCASE$(GUIKeyHit$) = UCASE$(GUIMenuItems(i).shortKey) THEN
                 'now, we have to draw  submenus
+                GUIKeyHit$ = ""
                 FOR j = 1 TO UBOUND(guimenuitems) - 1
                     COLOR GUIMenubarTheme.defaultFG, GUIMenubarTheme.defaultBG
                     _PRINTSTRING (GUIMenuItems(j).x, 0), RTRIM$(GUIMenuItems(j).name)
@@ -133,8 +135,8 @@ SUB GUIMenubarShow ()
                     GUIMouseX = _MOUSEX
                     GUIMouseY = _MOUSEY
                     GUIMouseClick = _MOUSEBUTTON(1)
-
-                    IF GUIMouseX > GUIMenuItems(i).x + totalWidth AND GUIMouseClick OR GUIMouseY > _FONTHEIGHT + totalHeight AND GUIMouseClick OR GUIMouseX < GUIMenuItems(i).x - 10 AND GUIMouseClick OR GUIMouseY <= _FONTHEIGHT AND GUIMouseX > GUIMenuItems(i).x * LEN(RTRIM$(GUIMenuItems(i).name)) + 10 AND GUIMouseClick OR GUIMouseY <= _FONTHEIGHT AND GUIMouseX < GUIMenuItems(i).x - 10 AND GUIMouseClick THEN
+                    k$ = INKEY$
+                    IF GUIMouseX > GUIMenuItems(i).x + totalWidth AND GUIMouseClick OR GUIMouseY > _FONTHEIGHT + totalHeight AND GUIMouseClick OR GUIMouseX < GUIMenuItems(i).x - 10 AND GUIMouseClick OR GUIMouseY <= _FONTHEIGHT AND GUIMouseX > GUIMenuItems(i).x + LEN(RTRIM$(GUIMenuItems(i).name)) * _FONTWIDTH + 10 AND GUIMouseClick OR GUIMouseY <= _FONTHEIGHT AND GUIMouseX < GUIMenuItems(i).x - 10 AND GUIMouseClick THEN
 
                         GUISelected$ = ""
                         EXIT DO
@@ -161,11 +163,11 @@ SUB GUIMenubarShow ()
                                 COLOR GUIMenubarTheme.shortcutKey
                                 _PRINTSTRING (GUIMenuItems(i).x + (Menus(j).shortKeyPos * _FONTWIDTH), Menus(j).x - 4), Menus(j).shortKey
                             END IF
+                            IF UCASE$(k$) = UCASE$(Menus(j).shortKey) THEN GUISelected$ = RTRIM$(GUIMenuItems(i).name) + "#" + RTRIM$(Menus(j).name): EXIT DO
                         END IF
                     NEXT
                     _DISPLAY
                     _LIMIT 30
-
                 LOOP
                 CLS , _RGB(0, 0, 0)
                 _PUTIMAGE , backup&
