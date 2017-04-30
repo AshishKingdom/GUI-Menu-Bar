@@ -57,5 +57,5 @@ GUIMenubarTheme.hoverBG = _RGB32(100, 200, 200)
 GUIMenubarTheme.divider = _RGB32(150, 150, 150)
 GUIMenubarTheme.shortcutKey = _RGB32(255, 0, 255)
 
-DIM SHARED GUIMouseX, GUIMouseY, GUIMouseClick, GUISelected$
+DIM SHARED GUIMouseX, GUIMouseY, GUIMouseClick, GUISelected$, GUIKeyHit$
 
