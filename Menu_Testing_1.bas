@@ -22,6 +22,7 @@ DO
     GUIMouseClick = _MOUSEBUTTON(1)
     GUIKeyHit$ = INKEY$
     IF GUIMouseY < _FONTHEIGHT OR GUIKeyHit$ <> "" THEN GUIMenubarShow
+    IF GUISelected$ = "File#Exit" THEN END
     IF GUISelected$ <> "" THEN
         COLOR _RGB(255, 255, 255), _RGB(0, 0, 0)
         _PRINTSTRING (150, 200), SPACE$(50)
